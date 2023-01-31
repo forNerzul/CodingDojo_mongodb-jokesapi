@@ -1,4 +1,5 @@
 const Joke = require("../models/joke.model");
+var random = require("mongoose-random");
 
 module.exports.findAllJokes = (req, res) => {
     Joke.find()
@@ -35,6 +36,20 @@ module.exports.updateExistingJoke = (req, res) => {
 module.exports.deleteAnExistingJoke = (req, res) => {
     Joke.deleteOne({ _id: req.params.id })
         .then((result) => res.json({ result: result }))
+        .catch((err) =>
+            res.json({ message: "Something went wrong", error: err })
+        );
+};
+
+module.exports.findRandomJoke = (req, res) => {
+    // Joke.findRandom()
+    //     .then((randomJoke) => res.json({ joke: randomJoke }))
+    //     .catch((err) =>
+    //         res.json({ message: "Something went wrong", error: err })
+    //     );
+
+    Joke.aggregate([{ $sample: { size: 1 } }])
+        .then((randomJoke) => res.json({ joke: randomJoke }))
         .catch((err) =>
             res.json({ message: "Something went wrong", error: err })
         );
